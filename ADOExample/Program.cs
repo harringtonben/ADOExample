@@ -14,12 +14,25 @@ namespace ADOExample
             var connection = new SqlConnection("Server=(local);Database=Chinook;Trusted_Connection=True;");
             var cmd = connection.CreateCommand();
 
-            cmd.CommandText = @"select count(*) as [Total Invoices], DATENAME(yyyy, InvoiceDate) as Year from Invoice
-                                where InvoiceDate like '%2009%'
-                                or InvoiceDate like '%2011%'
-                                group by DATENAME(yyyy, InvoiceDate)";
+            cmd.CommandText = @"select customerid, firstname, lastname, supportrepid from customer
+                                where country = 'Brazil'";
 
             connection.Open();
+
+            var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                var customerId = reader.GetInt32(0);
+                var firstname = reader.GetSqlString(1);
+                var lastname = reader.GetSqlString(2);
+                var supportRepId = reader.GetInt32(3);
+
+                Console.WriteLine($"{customerId} {firstname} {lastname} {supportRepId}");
+            }
+
+            connection.Close();
+            Console.ReadLine();
         }
     }
 }
