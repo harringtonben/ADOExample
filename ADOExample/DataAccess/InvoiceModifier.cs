@@ -15,6 +15,11 @@ namespace ADOExample.DataAccess
 
         public bool DeleteInvoice(int invoiceId)
         {
+            if(DeleteLineItems(invoiceId))
+            {
+                return false;
+            }
+
             using (var connection = new SqlConnection(_connectionString))
             {
                 var cmd = connection.CreateCommand();
@@ -30,6 +35,26 @@ namespace ADOExample.DataAccess
                 var result = cmd.ExecuteNonQuery();
 
                 return result == 1;
+            }
+        }
+
+        bool DeleteLineItems(int invoiceId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                var cmd = connection.CreateCommand();
+                cmd.CommandText = @"delete 
+                                    from InvoiceLine
+                                    where InvoiceId = @InvoiceId";
+
+                connection.Open();
+                var invoiceIdParam = new SqlParameter("@InvoiceId", SqlDbType.Int);
+                invoiceIdParam.Value = invoiceId;
+                cmd.Parameters.Add(invoiceIdParam);
+
+                var result = cmd.ExecuteNonQuery();
+
+                return result >= 1;
             }
         }
     }
