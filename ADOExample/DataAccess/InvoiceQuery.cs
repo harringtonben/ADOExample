@@ -1,6 +1,7 @@
 ﻿using ADOExample.DataAccess.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -11,16 +12,17 @@ namespace ADOExample.DataAccess
 {
     class InvoiceQuery
     {
+        readonly string _connectionString = ConfigurationManager.ConnectionStrings["Chinook"].ConnectionString;
         public List<Invoice> GetInvoiceByTrackFirstLetter(string firstCharacter)
         {
-            using (var connection = new SqlConnection("Server=(local);Database=Chinook;Trusted_Connection=True;"))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
                 var cmd = connection.CreateCommand();
                 cmd.CommandText = $@"select  i.*
                                 from invoice i
 	                                join InvoiceLine x on x.InvoiceId = i.InvoiceId
-                                where exists (select TrackId from Track where Name like @firstLetter and TrackId = x.TrackId)";
+                                where exists (select TrackId from Track where Name like @firstLetter + '%' and TrackId = x.TrackId)";
 
                 var firstLetter = new SqlParameter("@firstLetter", SqlDbType.NVarChar);
                 firstLetter.Value = firstCharacter;

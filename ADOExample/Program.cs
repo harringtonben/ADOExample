@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ADOExample.DataAccess;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -12,11 +13,15 @@ namespace ADOExample
     {
         static void Main(string[] args)
         {
-
-            Console.WriteLine("What country would you like to see customers from?");
             var firstletter = Console.ReadLine();
 
+            var invoiceQuery = new InvoiceQuery();
+            var invoices = invoiceQuery.GetInvoiceByTrackFirstLetter(firstletter);
 
+            foreach (var invoice in invoices)
+            {
+                Console.WriteLine($"Invoice ID {invoice.InvoiceId} was shipped to {invoice.BillingAddress}.");
+            }
 
             Console.ReadLine();
 
