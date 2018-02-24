@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ADOExample.DataAccess;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -11,28 +13,21 @@ namespace ADOExample
     {
         static void Main(string[] args)
         {
+            var firstletter = Console.ReadLine();
 
-            using (var connection = new SqlConnection("Server=(local);Database=Chinook;Trusted_Connection=True;"))
+            var invoiceQuery = new InvoiceQuery();
+            var invoices = invoiceQuery.GetInvoiceByTrackFirstLetter(firstletter);
+
+            foreach (var invoice in invoices)
             {
-                connection.Open();
-
-                var cmd = connection.CreateCommand();
-                cmd.CommandText = @"select customerid, firstname, lastname, supportrepid from customer
-                                where country = 'Brazil'";
-                var reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    var customerId = reader.GetInt32(0);
-                    var firstname = reader.GetSqlString(1);
-                    var lastname = reader.GetSqlString(2);
-                    var supportRepId = reader.GetInt32(3);
-
-                    Console.WriteLine($"{customerId} {firstname} {lastname} {supportRepId}");
-                }
+                Console.WriteLine($"Invoice ID {invoice.InvoiceId} was shipped to {invoice.BillingAddress}.");
             }
-               
+
+            var invoiceModifier = new InvoiceModifier();
+            invoiceModifier.DeleteInvoice(1);
+
             Console.ReadLine();
+
         }
     }
 }
