@@ -13,6 +13,7 @@ namespace ADOExample.DataAccess
     class InvoiceQuery
     {
         readonly string _connectionString = ConfigurationManager.ConnectionStrings["Chinook"].ConnectionString;
+
         public List<Invoice> GetInvoiceByTrackFirstLetter(string firstCharacter)
         {
             using (var connection = new SqlConnection(_connectionString))
