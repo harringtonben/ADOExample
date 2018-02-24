@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -11,14 +12,20 @@ namespace ADOExample
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("What country would you like to see customers from?");
+            var country = Console.ReadLine();
 
             using (var connection = new SqlConnection("Server=(local);Database=Chinook;Trusted_Connection=True;"))
             {
                 connection.Open();
-
                 var cmd = connection.CreateCommand();
                 cmd.CommandText = @"select customerid, firstname, lastname, supportrepid from customer
-                                where country = 'Brazil'";
+                                where country like @country";
+
+                var countryInput = new SqlParameter("@country", SqlDbType.NVarChar);
+                countryInput.Value = country;
+                cmd.Parameters.Add(countryInput);
+
                 var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
